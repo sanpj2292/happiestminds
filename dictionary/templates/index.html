@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dictionary App</title>
+</head>
+<body>
+    <h1>{{ page_name }}Page</h1>
+    {% if is_uploaded %}
+        <h6>Uploaded file in path {{ file }} successfully!</h6>
+        <p>{{ data }}</p>
+    {% else %}
+        <div id="upload-container">
+            <form method="post" action="/createDict/" enctype="multipart/form-data">
+                <input type="file" id="para-upload-input" name="file">
+                <input type="submit" value="Upload">
+            </form>
+        </div>
+    {% endif %}
+    <input type="text" id="search-input" name="word">
+</body>
+</html>
