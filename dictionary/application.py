@@ -1,7 +1,7 @@
 from dictionary import app, db
 from flask import render_template, request
 import os
-from .common.utils import readFile
+from .common.utils import readFile, getWordData
 from werkzeug.utils import secure_filename
 
 @app.route('/')
@@ -19,6 +19,7 @@ def create_dict():
         context['file'] = request.files['file'].filename
         context['is_uploaded'] = True
         context['page_name'] = 'Create Dict'
-        context['data'] = readFile(fpath)
+        words_set = readFile(fpath)
+        context['data'] = getWordData(list(words_set))
 
     return render_template('index.html', **context)
