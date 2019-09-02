@@ -29,11 +29,10 @@ def create_dict():
 def search_word():
     context = {}
     if request.method == 'GET':
-        print(request.args)
         if request.args.get('word') is not None:
             dictionary = get_dictionary(request.args['word'])
             if dictionary is not None:
-                context['word'] = dictionary.word
+                context['word'] = dictionary.word.capitalize()
                 context['meaning'] = dictionary.meanings
                 context['synonym'] = dictionary.synonyms
                 context['antonym'] = dictionary.antonyms
