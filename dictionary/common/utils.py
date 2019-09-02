@@ -1,39 +1,45 @@
 
-from .dictionary_thread import DictionaryThread
-from .threads.word_thread import WordThread
+from dictionary.common.threads.dictionary_thread import DictionaryThread
 from time import time
-from math import floor, log10
+from math import floor
 import re
+from .database import Database
+from pymongo.errors import BulkWriteError
+from pymongo import InsertOne
+from pprint import pprint
+from PyDictionary import PyDictionary
+from collections import namedtuple
+
+
+Dictionary = namedtuple('Dictionary', ['word', 'meanings', 'synonyms', 'antonyms'])
 
 def get_flat_list(list_of_lists):
     return [item for sublist in list_of_lists for item in sublist]
 
 
-def getWordData(word_list):
-    first = [word_list[0]]
-    unit_time = _calc_unit_time(first, WordThread)
+def get_dictionary(search_word):
+    if Database.find_one(collection='words_list', query={'word': search_word}) is not None:
+        mean = PyDictionary.meaning(search_word)
+        syn = PyDictionary.synonym(search_word)
+        ant = PyDictionary.antonym(search_word)
+        return Dictionary(word=search_word, meanings=mean, synonyms=syn, antonyms=ant)
+    else:
+        return None
 
-    length = len(word_list)
-    print(f'Word Length: {length}')
-    n_threads = _calculateThreads(line_length=length,
-                                  one_line_read_time=unit_time) + 1
-    if n_threads > 400:
-        n_threads = 400
-    print(f'The number of threads: {n_threads}')
-    ind_l = list(range(0, length, length // n_threads))
-    print(f'Arg3: {length // n_threads}')
-    w_threads = []
-    for i in range(0, length):
-        w_thread = WordThread(words=word_list[ind_l[i]:ind_l[i+1]])
-        w_threads.append(w_thread)
-        w_thread.start()
-        if i == length - 1:
-            w_thread = WordThread(words=word_list[ind_l[i]:])
-            w_threads.append(w_thread)
-            w_thread.start()
-    for thread in w_threads:
-        thread.join()
-    return WordThread.words_details
+
+def insert_words(words_list):
+    result = {}
+    try:
+        ops = []
+        for op in words_list:
+            if Database.find_one(collection='words_list', query={'word': op}) is None:
+                ops.append(InsertOne({'word': op}))
+        result = Database.bulk_write(collection='words_list', operations=ops)
+    except BulkWriteError as bwe:
+        pprint(bwe.details)
+    finally:
+        return result
+
 
 def readFile(filename):
     with open(filename, 'r', encoding='utf-8') as f:
@@ -43,14 +49,13 @@ def readFile(filename):
         thread_lines = []
         for i, line in enumerate(gen):
             if i == 0:
+                unit_time = _calc_unit_time(line, DictionaryThread)
                 n_threads = round(_calculateThreads(line_length=n_lines,
-                                                    one_line_read_time=_calc_unit_time(line, DictionaryThread)) + 1)
-                print(f'No of threads: {n_threads}')
+                                                    one_line_read_time=unit_time) + 1)
                 if n_threads > 40:
                     n_threads = 40
                 thread_line = []
                 thread_line.append(line)
-                print(f'{n_lines//n_threads}')
                 t_ind_list = list(range(0, n_lines, n_lines//n_threads))
                 lookup_dict = {}
                 for j in t_ind_list:
@@ -74,12 +79,11 @@ def readFile(filename):
         for thread in threads:
             thread.join()
 
-        print(f'The length of thread_lines: { len(thread_lines) }')
         return DictionaryThread.line_words
 
 
 def _calculateThreads(line_length, one_line_read_time):
-    if one_line_read_time > 0 and one_line_read_time <= 1 :
+    if 0 < one_line_read_time <= 1:
         return floor(line_length * one_line_read_time * 5)
     elif one_line_read_time > 1:
         l = str(one_line_read_time).split('.')
@@ -98,6 +102,7 @@ def _calculateThreads(line_length, one_line_read_time):
         return floor(line_length * one_line_read_time / int(v))
     else:
         return floor(line_length/80)
+
 
 def _calc_unit_time(first_line, cls):
     r_thread = cls(first_line)

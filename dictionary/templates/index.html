@@ -17,6 +17,20 @@
             </form>
         </div>
     {% endif %}
-    <input type="text" id="search-input" name="word">
+    <form method="get" action="/search_word" enctype="text/plain">
+        <input type="text" id="search-input" name="word">
+        <input type="submit" value="Search">
+        {% if empty %}
+            <p>{{ empty }}</p>
+        {% endif %}
+    </form>
+    {% if word %}
+        <div>
+            <h3>{{ word }}</h3>
+            <h5><b>Meaning:</b> {{ meaning }}</h5>
+            <h5><b>Synonym:</b> {{ synonym }}</h5>
+            <h5><b>Antonym:</b> {{ antonym }}</h5>
+        </div>
+    {% endif %}
 </body>
 </html>
