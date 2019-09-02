@@ -98,7 +98,6 @@ def _calculateThreads(line_length, one_line_read_time):
                     v = '1' + re.findall(r'^0{1,}', l[1])[0]
                 else:
                     v = '1'
-        print(f'The value of v: {v}')
         return floor(line_length * one_line_read_time / int(v))
     else:
         return floor(line_length/80)
@@ -110,5 +109,4 @@ def _calc_unit_time(first_line, cls):
     r_thread.start()
     r_thread.join()
     en = time()
-    print(f'Execution time for 1 line: {en-st}')
     return en - st
