@@ -4,9 +4,11 @@ import os
 from .common.utils import readFile, insert_words, get_dictionary
 from werkzeug.utils import secure_filename
 
+
 @app.route('/')
 def index():
     return render_template('index.html', context={'page_name': 'Home'})
+
 
 @app.route('/createDict/', methods=['POST'])
 def create_dict():

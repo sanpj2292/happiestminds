@@ -27,9 +27,28 @@
     {% if word %}
         <div>
             <h3>{{ word }}</h3>
-            <h5><b>Meaning:</b> {{ meaning }}</h5>
-            <h5><b>Synonym:</b> {{ synonym }}</h5>
-            <h5><b>Antonym:</b> {{ antonym }}</h5>
+            <h5><b>Meaning:</b> </h5>
+
+            {% for key, value in meaning.items() %}
+            <h5><i>{{ key }}</i>:</h5>
+                {% for m in value %}
+                    <ol>{{ m }}</ol>
+                {% endfor %}
+            {% endfor %}
+            <h5><b>Synonym:</b>
+                {% if synonym %}
+                    {{ synonym }}
+                {% else %}
+                    No Synonyms available in API
+                {% endif %}
+            </h5>
+            <h5><b>Antonym:</b>
+                {% if antonym %}
+                    {{ antonym }}
+                {% else %}
+                    No Antonyms available in API
+                {% endif %}
+            </h5>
         </div>
     {% endif %}
 </body>

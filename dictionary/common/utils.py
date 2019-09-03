@@ -1,4 +1,3 @@
-
 from dictionary.common.threads.dictionary_thread import DictionaryThread
 from time import time
 from math import floor
@@ -10,8 +9,8 @@ from pprint import pprint
 from PyDictionary import PyDictionary
 from collections import namedtuple
 
-
 Dictionary = namedtuple('Dictionary', ['word', 'meanings', 'synonyms', 'antonyms'])
+
 
 def get_flat_list(list_of_lists):
     return [item for sublist in list_of_lists for item in sublist]
@@ -54,9 +53,8 @@ def readFile(filename):
                                                     one_line_read_time=unit_time) + 1)
                 if n_threads > 40:
                     n_threads = 40
-                thread_line = []
-                thread_line.append(line)
-                t_ind_list = list(range(0, n_lines, n_lines//n_threads))
+                thread_line = [line]
+                t_ind_list = list(range(0, n_lines, n_lines // n_threads))
                 lookup_dict = {}
                 for j in t_ind_list:
                     lookup_dict[j] = 1
@@ -88,7 +86,7 @@ def _calculateThreads(line_length, one_line_read_time):
     elif one_line_read_time > 1:
         l = str(one_line_read_time).split('.')
         if len(l[0]) > 1:
-           v = '1' + '0'*len(l[0])
+            v = '1' + '0' * len(l[0])
         else:
             if int(l[0]) > 0:
                 v = '10'
@@ -100,7 +98,7 @@ def _calculateThreads(line_length, one_line_read_time):
                     v = '1'
         return floor(line_length * one_line_read_time / int(v))
     else:
-        return floor(line_length/80)
+        return floor(line_length / 80)
 
 
 def _calc_unit_time(first_line, cls):

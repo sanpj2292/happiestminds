@@ -1,6 +1,7 @@
 from threading import Thread, Lock
 import re
 
+
 class DictionaryThread(Thread):
     line_words = set()
     lock = Lock()
@@ -18,4 +19,3 @@ class DictionaryThread(Thread):
             for word in words:
                 DictionaryThread.line_words.add(word)
             DictionaryThread.lock.release()
-
