@@ -45,11 +45,12 @@ def search_word():
         if request.args.get('word') is not None:
             dictionary = get_dictionary(request.args['word'])
             if dictionary is not None:
-                context['word'] = dictionary.word.capitalize()
+                context['word'] = dictionary.word
                 context['meaning'] = dictionary.meanings
                 context['synonym'] = dictionary.synonyms
                 context['antonym'] = dictionary.antonyms
             else:
+                context['word'] = request.args.get("word")
                 context['no_word_msg'] = f'{request.args.get("word")} not available in DB! Please search with another word'
         else:
             context['empty'] = 'The search box is Empty! Kindly please fill it and try again!!'

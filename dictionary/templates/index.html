@@ -28,16 +28,16 @@
     </div>
     <div class="mt-2 container">
             <form method="get" action="/search_word" enctype="text/plain">
-                <input type="text" id="search-input" name="word" value="{{ word if word else ''}}">
+                <input type="text" id="search-input" name="word" value="{{ word or ''}}">
                 <input type="submit" value="Search">
                 {% if empty %}
                     <p>{{ empty }}</p>
                 {% endif %}
             </form>
     </div>
-    {% if word %}
+    {% if not no_word_msg %}
         <div class="mt-2 container">
-            <h3>{{ word }}</h3>
+            <h3>{{ word.capitalize() }}</h3>
             <!-- Meaning Display according to Parts of Speech -->
             <h4><b>Meaning:</b> </h4>
             {% if meaning %}
@@ -67,13 +67,11 @@
                 <p>No Antonyms available in API</p>
             {% endif %}
     {% else %}
-        {% if no_word_msg %}
             <div class="mt-1 container ml-2">
                 <div class="alert alert-danger" role="alert">
                     {{ no_word_msg }}
                 </div>
             </div>
-        {% endif %}
         </div>
     {% endif %}
     <!-- Bootstrap js files   -->
