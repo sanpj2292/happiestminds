@@ -7,7 +7,6 @@ from werkzeug.utils import secure_filename
 
 @app.route('/')
 def index():
-
     return render_template('index.html', context={'page_name': 'Home'})
 
 
@@ -51,7 +50,7 @@ def search_word():
                 context['synonym'] = dictionary.synonyms
                 context['antonym'] = dictionary.antonyms
             else:
-                context['no_word_msg'] = 'Word not available in DB! Please search with another word'
+                context['no_word_msg'] = f'{request.args.get("word")} not available in DB! Please search with another word'
         else:
             context['empty'] = 'The search box is Empty! Kindly please fill it and try again!!'
 

@@ -10,26 +10,41 @@ from pprint import pprint
 from PyDictionary import PyDictionary
 from collections import namedtuple
 
+"""
+This namedtuple is an object that would be used to send data
+to Flask View
+"""
 Dictionary = namedtuple('Dictionary', ['word', 'meanings', 'synonyms', 'antonyms'])
 
 
 def allowed_file(filename: str) -> bool:
+    """
+    This methods validates if the filetype is indeed one of
+    the types mentioned in the configuration parameter of Flask
+
+    :param filename: str
+    :return:  bool
+    """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def get_flat_list(list_of_lists):
     """
+    This method is used to flatten nested lists of order 1
 
-    :list[list] list_of_lists: list
+    :type list_of_lists: list
     """
     return [item for sublist in list_of_lists for item in sublist]
 
 
 def get_dictionary(search_word):
     """
+    Gets the dictionary meaning of a word, it's antonym and synonym
+    if available in the PyDictionary API
 
-    :str search_word: namedtuple|None
+    :type search_word: str
+    :return namedtuple|None
     """
     if Database.find_one(collection='words_list', query={'word': search_word}) is not None:
         mean = PyDictionary.meaning(search_word)
@@ -40,7 +55,13 @@ def get_dictionary(search_word):
         return None
 
 
-def insert_words(words_list: list) -> dict:
+def insert_words(words_list: list) -> object:
+    """
+    Inserts the words from the uploaded text file into Database
+
+    :param words_list: list
+    :return: object
+    """
     result = {}
     try:
         ops = []
@@ -55,6 +76,13 @@ def insert_words(words_list: list) -> dict:
 
 
 def readFile(filename: str) -> list:
+    """
+    Reads the file with a particular file name
+    and gets words list from the file
+
+    :param filename: str
+    :return: list
+    """
     with open(filename, 'r', encoding='utf-8') as f:
         gen = f.readlines()
         n_threads = 1
@@ -95,6 +123,14 @@ def readFile(filename: str) -> list:
 
 
 def _calculateThreads(line_length: int, one_line_read_time: float) -> int:
+    """
+    Calculates number of threads according to the length of string
+    and the time taken to read one unit of a string
+
+    :param line_length: int
+    :param one_line_read_time: float
+    :return: int
+    """
     if 0 < one_line_read_time <= 1:
         return floor(line_length * one_line_read_time * 5)
     elif one_line_read_time > 1:
