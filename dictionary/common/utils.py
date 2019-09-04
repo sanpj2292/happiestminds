@@ -1,3 +1,4 @@
+from dictionary import ALLOWED_EXTENSIONS
 from dictionary.common.threads.dictionary_thread import DictionaryThread
 from time import time
 from math import floor
@@ -12,11 +13,24 @@ from collections import namedtuple
 Dictionary = namedtuple('Dictionary', ['word', 'meanings', 'synonyms', 'antonyms'])
 
 
+def allowed_file(filename: str) -> bool:
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 def get_flat_list(list_of_lists):
+    """
+
+    :list[list] list_of_lists: list
+    """
     return [item for sublist in list_of_lists for item in sublist]
 
 
 def get_dictionary(search_word):
+    """
+
+    :str search_word: namedtuple|None
+    """
     if Database.find_one(collection='words_list', query={'word': search_word}) is not None:
         mean = PyDictionary.meaning(search_word)
         syn = PyDictionary.synonym(search_word)
@@ -26,7 +40,7 @@ def get_dictionary(search_word):
         return None
 
 
-def insert_words(words_list):
+def insert_words(words_list: list) -> dict:
     result = {}
     try:
         ops = []
@@ -40,7 +54,7 @@ def insert_words(words_list):
         return result
 
 
-def readFile(filename):
+def readFile(filename: str) -> list:
     with open(filename, 'r', encoding='utf-8') as f:
         gen = f.readlines()
         n_threads = 1
@@ -80,7 +94,7 @@ def readFile(filename):
         return DictionaryThread.line_words
 
 
-def _calculateThreads(line_length, one_line_read_time):
+def _calculateThreads(line_length: int, one_line_read_time: float) -> int:
     if 0 < one_line_read_time <= 1:
         return floor(line_length * one_line_read_time * 5)
     elif one_line_read_time > 1:
@@ -102,6 +116,24 @@ def _calculateThreads(line_length, one_line_read_time):
 
 
 def _calc_unit_time(first_line, cls):
+    """
+
+    Parameters
+    -------------
+    first_one
+     contains a unit string on which
+     calculation of time is done to assist in calculation
+     of number of threads required
+
+    cls
+     contains the class or Specifically Thread class
+     which will be used for MultiThreading
+
+    :type first_line: str
+    :type cls: object
+
+    :return float
+    """
     r_thread = cls(first_line)
     st = time()
     r_thread.start()

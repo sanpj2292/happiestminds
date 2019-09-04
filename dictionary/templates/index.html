@@ -3,53 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Dictionary App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-    <h1>{{ page_name }}Page</h1>
-    {% if is_uploaded %}
-        <h6>Uploaded file in path {{ file }} successfully!</h6>
-        <p>{{ data }}</p>
-    {% else %}
-        <div id="upload-container">
-            <form method="post" action="/createDict/" enctype="multipart/form-data">
-                <input type="file" id="para-upload-input" name="file">
-                <input type="submit" value="Upload">
-            </form>
-        </div>
-    {% endif %}
-    <form method="get" action="/search_word" enctype="text/plain">
-        <input type="text" id="search-input" name="word">
-        <input type="submit" value="Search">
-        {% if empty %}
-            <p>{{ empty }}</p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">Dictionary Page</a>
+    </nav>
+    <div class="mt-2 container" id="upload-container">
+        {% if is_not_home %}
+            {% if is_uploaded %}
+                <div class="alert alert-primary" role="alert">
+                    Uploaded file in path {{ file }} successfully!
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    {{ no_file }}.
+                </div>
+            {% endif %}
         {% endif %}
-    </form>
+        <form method="post" action="/createDict/" enctype="multipart/form-data">
+            <input type="file" id="para-upload-input" name="file">
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+    <div class="mt-2 container">
+            <form method="get" action="/search_word" enctype="text/plain">
+                <input type="text" id="search-input" name="word" value="{{ word if word else ''}}">
+                <input type="submit" value="Search">
+                {% if empty %}
+                    <p>{{ empty }}</p>
+                {% endif %}
+            </form>
+    </div>
     {% if word %}
-        <div>
+        <div class="mt-2 container">
             <h3>{{ word }}</h3>
-            <h5><b>Meaning:</b> </h5>
-
-            {% for key, value in meaning.items() %}
-            <h5><i>{{ key }}</i>:</h5>
-                {% for m in value %}
-                    <ol>{{ m }}</ol>
+            <!-- Meaning Display according to Parts of Speech -->
+            <h4><b>Meaning:</b> </h4>
+            {% if meaning %}
+                {% for key, value in meaning.items() %}
+                <h5><i>{{ key }}</i>:</h5>
+                    <ol type="i">
+                        {% for m in value %}
+                            <li>{{ m }}</li>
+                        {% endfor %}
+                    </ol>
                 {% endfor %}
-            {% endfor %}
-            <h5><b>Synonym:</b>
-                {% if synonym %}
-                    {{ synonym }}
-                {% else %}
-                    No Synonyms available in API
-                {% endif %}
-            </h5>
-            <h5><b>Antonym:</b>
-                {% if antonym %}
-                    {{ antonym }}
-                {% else %}
-                    No Antonyms available in API
-                {% endif %}
-            </h5>
+            {% else %}
+                <h6>No Meanings available in API</h6>
+            {% endif%}
+            <!-- Synonyms Display -->
+            <h4><b>Synonym:</b></h4>
+            {% if synonym %}
+                {{ synonym }}
+            {% else %}
+                <p>No Synonyms available in API</p>
+            {% endif %}
+            <!-- Antonyms Display -->
+            <h4><b>Antonym:</b></h4>
+            {% if antonym %}
+                {{ antonym }}
+            {% else %}
+                <p>No Antonyms available in API</p>
+            {% endif %}
+
+    {% else %}
+        {% if no_word_msg %}
+            <div class="mt-1 container ml-2">
+                <div class="alert alert-danger" role="alert">
+                    {{ no_word_msg }}
+                </div>
+            </div>
+        {% endif %}
         </div>
     {% endif %}
+    <!-- Bootstrap js files   -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
