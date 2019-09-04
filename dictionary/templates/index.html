@@ -35,7 +35,7 @@
                 {% endif %}
             </form>
     </div>
-    {% if not no_word_msg %}
+    {% if not no_word_msg and word %}
         <div class="mt-2 container">
             <h3>{{ word.capitalize() }}</h3>
             <!-- Meaning Display according to Parts of Speech -->
@@ -66,7 +66,7 @@
             {% else %}
                 <p>No Antonyms available in API</p>
             {% endif %}
-    {% else %}
+    {% elif no_word_msg %}
             <div class="mt-1 container ml-2">
                 <div class="alert alert-danger" role="alert">
                     {{ no_word_msg }}
